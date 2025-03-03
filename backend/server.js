@@ -2,12 +2,14 @@ import express, { response } from 'express'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import {GoogleGenerativeAI} from "@google/generative-ai"
+import SoilRouter from './routes/soilRouter.js'
 dotenv.config()
 
 
 const app = express()
 
 app.use(express.json())
+app.use('/api/soil', SoilRouter)
 
 
 
@@ -43,10 +45,8 @@ async function getGeminiResponse(prompt) {
 
 app.get("/ai", async(req, res) => {
 
-
-
     const prompt = "Explains how AI works"
-    const res = await getGeminiResponse()
+    const response = await getGeminiResponse()
     return res.json({prompt ,response})
 })
 

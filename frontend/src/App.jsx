@@ -1,35 +1,80 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import Header from "./components/Header";
+import UploadSection from "./components/UploadSection";
+import InputSection from "./components/InputSection";
+import ReportSection from "./components/ReportSection";
+import EducationSection from "./components/EducationSection";
+import Footer from "./components/Footer";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [image, setImage] = useState(null);
+  const [location, setLocation] = useState("");
+  const [phLevel, setPhLevel] = useState("");
+  const [phType, setPhType] = useState("");
+  const [reports, setReports] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const handleImageUpload = (file) => {
+    setImage(URL.createObjectURL(file));
+    // Simulate upload progress
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 20;
+      setUploadProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        // Mock API call for pH estimation
+        setTimeout(() => {
+          setPhLevel("6.8");
+          setPhType("Neutral");
+        }, 500);
+      }
+    }, 300);
+  };
+
+  const handleSubmit = () => {
+    if (!image || !location) {
+      alert("Please upload an image and enter a location");
+      return;
+    }
+    const newReport = {
+      image,
+      location,
+      phLevel,
+      phType,
+      date: new Date().toLocaleDateString(),
+    };
+    setReports([...reports, newReport]);
+    setImage(null);
+    setLocation("");
+    setPhLevel("");
+    setPhType("");
+    setUploadProgress(0);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      <Header />
+      <main className="main-content">
+        <UploadSection
+          image={image}
+          uploadProgress={uploadProgress}
+          onImageUpload={handleImageUpload}
+        />
+        <InputSection
+          location={location}
+          setLocation={setLocation}
+          phLevel={phLevel}
+          phType={phType}
+          onSubmit={handleSubmit}
+        />
+        <ReportSection reports={reports} />
+        <EducationSection />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
-export default App
+export default App;
